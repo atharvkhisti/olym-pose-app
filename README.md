@@ -234,52 +234,130 @@ curl http://localhost:3000
 curl http://localhost:8001/health
 ```
 
-### Reverse Proxy Setup (nginx)
+### Production HTTPS Setup (Caddy)
 
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-    return 301 https://$server_name$request_uri;
-}
+**Caddy** provides automatic HTTPS via Let's Encrypt with zero manual certificate management.
 
-server {
-    listen 443 ssl http2;
-    server_name your-domain.com;
-    
-    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
-    
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
+#### Prerequisites
+
+- Domain name with DNS A record pointing to your VPS IP
+- Firewall rules allowing ports 80 and 443
+
+#### DNS Configuration
+
+Add an A record in your DNS provider:
+
+```
+your-domain.com  A  <your-vps-ip>
+```
+
+#### Caddyfile Configuration
+
+The `Caddyfile` at repo root contains the reverse proxy configuration. Before deploying, update:
+
+```caddyfile
+your-domain.com {
+  # Change to your actual domain
+```
+
+Also update the admin email:
+
+```caddyfile
+{
+  email your-email@your-domain.com
 }
 ```
 
-### Management Commands
+#### Start the Proxy Stack
+
+Use both compose files together:
 
 ```bash
-# View running services
-docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml pull
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml up -d
+```
 
-# View logs
-docker compose -f docker-compose.prod.yml logs -f
+This starts:
+- **web** (frontend) on internal Docker network (port 3000)
+- **ai** (backend) on internal Docker network (port 8001, not exposed)
+- **caddy** (reverse proxy) listening on ports 80 and 443
 
-# Stop services
-docker compose -f docker-compose.prod.yml down
+#### Verify HTTPS Setup
+
+1. **Check certificate issued:**
+
+```bash
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml logs caddy | grep "certificate"
+```
+
+2. **Test HTTPS connection:**
+
+```bash
+curl -I https://your-domain.com
+```
+
+Expected response: `HTTP/1.1 200 OK` with `Server: Caddy`
+
+3. **Verify backend is not publicly accessible:**
+
+```bash
+curl https://your-domain.com:8001/health
+# Should timeout or refuse connection
+```
+
+#### Management Commands
+
+```bash
+# View all services
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml ps
+
+# View logs (all services)
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml logs -f
+
+# View only Caddy logs
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml logs -f caddy
+
+# Stop all services
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml down
 
 # Restart services
-docker compose -f docker-compose.prod.yml restart
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml restart
 
 # Update images and restart
-docker compose -f docker-compose.prod.yml pull
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml pull
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.proxy.yml up -d
 ```
+
+#### Environment Variables for HTTPS
+
+Update `.env` on VPS:
+
+```env
+NEXTAUTH_URL=https://your-domain.com
+NEXTAUTH_SECRET=<your-secret>
+GOOGLE_CLIENT_ID=<your-client-id>
+GOOGLE_CLIENT_SECRET=<your-client-secret>
+MONGODB_URI=<your-mongodb-uri>
+NEXT_PUBLIC_AI_SERVICE_URL=http://ai:8001
+```
+
+#### Troubleshooting
+
+**Certificate not issuing:**
+- Verify DNS A record is set and propagated
+- Check Caddy logs: `docker compose logs caddy`
+- Ensure ports 80/443 are open on firewall
+- Let's Encrypt requires a valid email in Caddyfile
+
+**Can't reach frontend:**
+- Verify domain resolves to VPS IP: `nslookup your-domain.com`
+- Check Caddy is running: `docker compose ps`
+- Check web service is healthy: `docker compose logs web`
+
+**Backend appears publicly accessible:**
+- Verify `ai` service has NO port mappings in compose files
+- Check firewall only allows ports 80/443
+- Backend should only be reachable via internal Docker network
 
 ```bash
 sudo certbot --nginx -d your-domain.com

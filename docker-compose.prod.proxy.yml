@@ -1,0 +1,22 @@
+services:
+  caddy:
+    image: caddy:2
+    container_name: olym-pose-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=your-domain.com
+    restart: unless-stopped
+    depends_on:
+      - web
+    networks:
+      - olym-pose-network
+
+volumes:
+  caddy_data:
+  caddy_config:
