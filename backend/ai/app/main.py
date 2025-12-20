@@ -11,7 +11,14 @@ from .infer import classifier
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    classifier.load()
+    # Try to load models, but don't fail if it doesn't work
+    # Health endpoint will report loading status
+    try:
+        classifier.load()
+    except Exception as e:
+        import logging
+        logging.error(f"Model loading failed during startup: {e}")
+        # Continue anyway - health endpoint will show "loading" status
     yield
 
 
