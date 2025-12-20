@@ -1,7 +1,8 @@
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 pydantic>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-xgboost>=2.0.0
-joblib>=1.3.0
+# Pinned versions for Python 3.11 compatibility and deterministic builds
+numpy==1.24.3
+scikit-learn==1.3.2
+joblib==1.3.2
+xgboost==2.0.3

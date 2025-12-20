@@ -34,3 +34,4 @@ class ResetResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     model_loaded: bool
+    model_status: Optional[str] = None  # "loaded", "not_loaded", "loading"

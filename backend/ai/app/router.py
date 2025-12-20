@@ -28,7 +28,10 @@ def reset(req: ResetRequest) -> ResetResponse:
 
 @router.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
+    """Health check endpoint for Docker/load balancer."""
+    model_status = "loaded" if classifier.is_loaded else "not_loaded"
     return HealthResponse(
         status="ok" if classifier.is_loaded else "loading",
-        model_loaded=classifier.is_loaded
+        model_loaded=classifier.is_loaded,
+        model_status=model_status
     )
