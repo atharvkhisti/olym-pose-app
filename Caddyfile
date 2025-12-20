@@ -1,9 +1,9 @@
 {
   # Global options
-  email admin@your-domain.com
+  email admin@olympose.103-110-252-184.sslip.io
 }
 
-your-domain.com {
+olympose.103-110-252-184.sslip.io {
   # Automatic HTTPS via Let's Encrypt
   
   # Reverse proxy to frontend
