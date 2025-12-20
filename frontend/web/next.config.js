@@ -1,17 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   reactStrictMode: true,
-  // Enable standalone output for Docker deployment
-  output: 'standalone',
-  // TODO: Add AI service proxy configuration when integrating FastAPI
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/api/ai/:path*',
-  //       destination: `${process.env.AI_SERVICE_URL}/:path*`,
-  //     },
-  //   ];
-  // },
+  images: {
+    unoptimized: true,
+  },
 };
 
 module.exports = nextConfig;
