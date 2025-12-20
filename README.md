@@ -140,7 +140,7 @@ All jobs must pass before merging PRs. Build caching is enabled for faster subse
 
 ---
 
-## Production Deployment
+## Production Deployment (VPS)
 
 ### Server Requirements
 
@@ -148,36 +148,107 @@ All jobs must pass before merging PRs. Build caching is enabled for faster subse
 - 4GB+ RAM
 - Docker & Docker Compose installed
 - Domain with SSL certificate (recommended)
+- GitHub Personal Access Token (PAT) for GHCR access
 
-### Deployment Steps
+### Prerequisites
 
-1. **Clone repository on server:**
+**Install Docker & Docker Compose:**
 
 ```bash
-git clone https://github.com/your-username/olym-pose-app.git
+# Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install -y docker.io docker-compose
+
+# Start Docker service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Add user to docker group (optional, for non-sudo access)
+sudo usermod -aG docker $USER
+```
+
+### Deployment Flow
+
+1. **SSH into your VPS:**
+
+```bash
+ssh user@your-vps-ip
+```
+
+2. **Login to GitHub Container Registry (GHCR):**
+
+```bash
+echo $YOUR_GITHUB_PAT | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+```
+
+3. **Clone production compose file:**
+
+```bash
+git clone https://github.com/atharvkhisti/olym-pose-app.git
 cd olym-pose-app
 ```
 
-2. **Create production environment file:**
+4. **Create production environment file:**
 
 ```bash
 cp .env.example .env
 nano .env  # Edit with production values
 ```
 
-3. **Build and start services:**
+**Required environment variables:**
 
-```bash
-docker compose build
-docker compose up -d
+```env
+NEXTAUTH_URL=https://your-domain.com
+NEXTAUTH_SECRET=<generate-with-openssl-rand-base64-32>
+GOOGLE_CLIENT_ID=<your-client-id>
+GOOGLE_CLIENT_SECRET=<your-client-secret>
+MONGODB_URI=<your-mongodb-connection-string>
 ```
 
-4. **Set up reverse proxy (nginx):**
+5. **Pull latest images from GHCR:**
+
+```bash
+docker compose -f docker-compose.prod.yml pull
+```
+
+6. **Start services:**
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+7. **Verify health:**
+
+```bash
+docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml logs -f
+```
+
+8. **Check service health endpoints:**
+
+```bash
+# Frontend health
+curl http://localhost:3000
+
+# Backend health
+curl http://localhost:8001/health
+```
+
+### Reverse Proxy Setup (nginx)
 
 ```nginx
 server {
     listen 80;
     server_name your-domain.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;
+    
+    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
     
     location / {
         proxy_pass http://localhost:3000;
@@ -187,16 +258,28 @@ server {
         proxy_set_header Host $host;
         proxy_cache_bypass $http_upgrade;
     }
-    
-    location /api/ai/ {
-        proxy_pass http://localhost:8001/;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-    }
 }
 ```
 
-5. **Enable SSL with Certbot:**
+### Management Commands
+
+```bash
+# View running services
+docker compose -f docker-compose.prod.yml ps
+
+# View logs
+docker compose -f docker-compose.prod.yml logs -f
+
+# Stop services
+docker compose -f docker-compose.prod.yml down
+
+# Restart services
+docker compose -f docker-compose.prod.yml restart
+
+# Update images and restart
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
 
 ```bash
 sudo certbot --nginx -d your-domain.com
