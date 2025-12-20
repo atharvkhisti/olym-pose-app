@@ -1,0 +1,30 @@
+{
+  "baseline_feature_columns": [
+    "l_elbow_mean",
+    "r_elbow_mean",
+    "l_knee_mean",
+    "r_knee_mean",
+    "l_hip_mean",
+    "r_hip_mean"
+  ],
+  "enhanced_feature_columns": [
+    "l_elbow_mean",
+    "r_elbow_mean",
+    "l_knee_mean",
+    "r_knee_mean",
+    "l_hip_mean",
+    "r_hip_mean",
+    "body_tilt_mean",
+    "ratio_sh_hip_mean",
+    "ratio_arm_torso_mean",
+    "l_elbow_std",
+    "r_elbow_std",
+    "l_knee_std",
+    "r_knee_std",
+    "l_hip_std",
+    "r_hip_std",
+    "body_tilt_std",
+    "ratio_sh_hip_std",
+    "ratio_arm_torso_std"
+  ]
+}

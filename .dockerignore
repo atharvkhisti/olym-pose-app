@@ -1,0 +1,39 @@
+# Docker build artifacts
+.git
+.gitignore
+**/.git
+**/.DS_Store
+**/node_modules
+**/.next
+**/__pycache__
+**/*.pyc
+**/.env
+**/.env.local
+**/.env*.local
+**/venv
+**/.venv
+**/dist
+**/build
+**/*.log
+**/npm-debug.log*
+**/.pytest_cache
+**/.coverage
+**/htmlcov
+**/*.egg-info
+**/.mypy_cache
+**/Thumbs.db
+
+# IDE
+**/.idea
+**/.vscode
+
+# Documentation
+**/docs
+*.md
+!README.md
+
+# Tests (optional - remove if you want tests in production)
+**/__tests__
+**/tests
+**/test_*.py
+**/*_test.py
