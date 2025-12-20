@@ -70,13 +70,16 @@ class Classifier:
             import logging
             logging.error(f"Failed to load models: {e}")
             self._loaded = False
-            raise
+            # Don't raise - allow service to start without models
     
     @property
     def is_loaded(self) -> bool:
         return self._loaded
     
     def predict(self, landmarks: List[Landmark], session_id: str, exercise: Optional[str] = None) -> Tuple[str, float, int]:
+        if not self._loaded or self.model is None or self.label_encoder is None:
+            raise RuntimeError("Model not loaded")
+        
         feats = extract_features(landmarks)
         X = np.array([features_to_vector(feats, self.feature_cols)])
         
