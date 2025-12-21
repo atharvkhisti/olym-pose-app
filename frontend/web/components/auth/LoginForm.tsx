@@ -19,21 +19,13 @@ export default function LoginForm() {
       
       console.log("Initiating Google sign-in...");
       
-      const result = await signIn("google", { 
-        redirect: false,
+      // For OAuth providers like Google, we need redirect: true
+      // This allows the browser to navigate to Google's consent screen
+      await signIn("google", { 
         callbackUrl: "/dashboard" 
       });
       
-      console.log("Sign-in result:", result);
-      
-      if (result?.error) {
-        console.error("Sign-in error:", result.error);
-        setError(`Authentication failed: ${result.error}`);
-        setIsLoading(false);
-      } else if (result?.ok) {
-        console.log("Sign-in successful, redirecting...");
-        router.push("/dashboard");
-      }
+      // Note: Code after signIn won't execute because the page redirects
     } catch (err) {
       console.error("Exception during sign-in:", err);
       setError("Failed to sign in with Google. Please try again.");
