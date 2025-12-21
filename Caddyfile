@@ -6,23 +6,33 @@
 olympose.103-110-252-184.sslip.io {
   # Automatic HTTPS via Let's Encrypt
   
-  # Reverse proxy to frontend
-  reverse_proxy web:3000 {
-    # Preserve original request information
-    header_up Host {host}
-    header_up X-Real-IP {remote_host}
-    header_up X-Forwarded-For {remote_host}
-    header_up X-Forwarded-Proto {scheme}
-    
-    # Connection timeouts
-    transport http {
-      dial_timeout 10s
-      response_header_timeout 30s
+  # Compression
+  encode gzip zstd
+  
+  # API routes to backend
+  handle_path /api/* {
+    reverse_proxy ai:8001 {
+      header_up Host {host}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto {scheme}
     }
   }
   
-  # Compression
-  encode gzip zstd
+  # All other routes to frontend
+  handle {
+    reverse_proxy web:3000 {
+      header_up Host {host}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto {scheme}
+      
+      transport http {
+        dial_timeout 10s
+        response_header_timeout 30s
+      }
+    }
+  }
   
   # Logging
   log {

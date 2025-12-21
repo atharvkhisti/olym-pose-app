@@ -26,19 +26,13 @@ app = FastAPI(title="Exercise Classifier", lifespan=lifespan)
 
 # Enable CORS for frontend
 # In production, set CORS_ORIGINS env var to comma-separated list of allowed origins
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",")
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://olympose.103-110-252-184.sslip.io").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
+    allow_origins=["*"],  # Allow all in production since behind Caddy
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(router)
-
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint for Docker/load balancer."""
-    return {"status": "healthy"}

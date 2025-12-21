@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy requirements and install
 COPY backend/ai/requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt gunicorn
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --user -r requirements.txt gunicorn
 
 # Production stage
 FROM python:3.11-slim

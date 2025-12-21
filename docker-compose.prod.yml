@@ -26,7 +26,8 @@ services:
     env_file: .env
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_AI_SERVICE_URL=http://ai:8001
+      # In production, frontend browser calls AI through Caddy reverse proxy
+      - NEXT_PUBLIC_AI_SERVICE_URL=https://olympose.103-110-252-184.sslip.io/api
     depends_on:
       ai:
         condition: service_started
