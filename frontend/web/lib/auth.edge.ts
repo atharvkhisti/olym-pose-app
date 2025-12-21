@@ -12,10 +12,18 @@ export const authConfig: NextAuthConfig = {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
     }),
   ],
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: "/login",
@@ -42,12 +50,15 @@ export const authConfig: NextAuthConfig = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, profile }) {
       // Initial sign in
       if (account && user) {
         return {
           ...token,
           userId: user.id,
+          email: user.email,
+          name: user.name,
+          picture: user.image,
           provider: account.provider,
         };
       }
@@ -56,15 +67,11 @@ export const authConfig: NextAuthConfig = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.userId as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.picture as string;
       }
       return session;
-    },
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
     },
   },
 };

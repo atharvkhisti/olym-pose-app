@@ -1,23 +1,22 @@
 import NextAuth from "next-auth";
-// import { MongoDBAdapter } from "@auth/mongodb-adapter";
-// import clientPromise from "@/lib/mongodb";
 import { authConfig } from "@/lib/auth.edge";
 
 /**
  * Full NextAuth configuration.
- * MongoDB adapter is temporarily disabled due to connection issues.
- * TODO: Re-enable MongoDB adapter once Atlas connection is fixed:
- *   1. Go to MongoDB Atlas → Network Access → Add current IP
- *   2. Or set "Allow Access from Anywhere" (0.0.0.0/0) for dev
- *   3. Ensure cluster is not paused (free tier pauses after inactivity)
+ * MongoDB adapter is disabled - using JWT strategy for session management.
  */
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
-  // adapter: MongoDBAdapter(clientPromise), // Disabled - MongoDB timeout
+  // Use env var for base URL
+  basePath: "/api/auth",
+  // Enable debug in development
+  debug: process.env.NODE_ENV === "development",
   events: {
     async signIn({ user, account }) {
       console.log(`✅ User signed in: ${user.email} via ${account?.provider}`);
     },
+    async signOut({ token }) {
+      console.log(`👋 User signed out: ${token?.email}`);
+    },
   },
-  debug: process.env.NODE_ENV === "development",
 });

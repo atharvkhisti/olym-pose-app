@@ -11,12 +11,13 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except:
-     * - api routes
+     * - api/auth routes (NextAuth)
+     * - api/health (health checks)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt
-     * - public folder
+     * - public assets
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.svg$).*)",
+    "/((?!api/auth|api/health|_next/static|_next/image|favicon|sitemap|robots|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
