@@ -19,17 +19,8 @@ olympose.43-204-228-125.sslip.io {
     }
   }
   
-  # Health check routes to appropriate services
-  handle /api/health {
-    reverse_proxy web:3000 {
-      header_up Host {host}
-      header_up X-Real-IP {remote_host}
-      header_up X-Forwarded-For {remote_host}
-      header_up X-Forwarded-Proto {scheme}
-    }
-  }
-  
   # All other API routes to AI backend (FastAPI)
+  # This includes /api/health, /api/analyze, /api/reset, etc.
   handle_path /api/* {
     reverse_proxy ai:8001 {
       header_up Host {host}
