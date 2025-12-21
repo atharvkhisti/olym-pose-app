@@ -9,7 +9,27 @@ olympose.103-110-252-184.sslip.io {
   # Compression
   encode gzip zstd
   
-  # API routes to backend
+  # NextAuth routes MUST go to frontend (Next.js handles these)
+  handle /api/auth/* {
+    reverse_proxy web:3000 {
+      header_up Host {host}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto {scheme}
+    }
+  }
+  
+  # Health check routes to appropriate services
+  handle /api/health {
+    reverse_proxy web:3000 {
+      header_up Host {host}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto {scheme}
+    }
+  }
+  
+  # All other API routes to AI backend (FastAPI)
   handle_path /api/* {
     reverse_proxy ai:8001 {
       header_up Host {host}
