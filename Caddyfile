@@ -1,9 +1,9 @@
 {
   # Global options
-  email admin@olympose.103-110-252-184.sslip.io
+  email admin@olympose.43-204-228-125.sslip.io
 }
 
-olympose.103-110-252-184.sslip.io {
+olympose.43-204-228-125.sslip.io {
   # Automatic HTTPS via Let's Encrypt
   
   # Compression
