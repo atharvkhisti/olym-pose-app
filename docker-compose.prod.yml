@@ -28,6 +28,14 @@ services:
       - NODE_ENV=production
       # In production, frontend browser calls AI through Caddy reverse proxy
       - NEXT_PUBLIC_AI_SERVICE_URL=https://olympose.103-110-252-184.sslip.io/api
+      # NextAuth v5 requires this for production
+      - AUTH_TRUST_HOST=true
+      # These must be set in .env file:
+      # - NEXTAUTH_URL
+      # - NEXTAUTH_SECRET
+      # - GOOGLE_CLIENT_ID
+      # - GOOGLE_CLIENT_SECRET
+      # - MONGODB_URI
     depends_on:
       ai:
         condition: service_started

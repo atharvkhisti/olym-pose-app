@@ -15,8 +15,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user, account }) {
       console.log(`✅ User signed in: ${user.email} via ${account?.provider}`);
     },
-    async signOut({ token }) {
-      console.log(`👋 User signed out: ${token?.email}`);
+    async signOut(message) {
+      console.log(`👋 User signed out`);
     },
   },
 });

@@ -7,7 +7,7 @@ import Google from "next-auth/providers/google";
  */
 export const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
-  trustHost: true,
+  trustHost: true, // Required for production behind reverse proxy
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -19,6 +19,8 @@ export const authConfig: NextAuthConfig = {
           response_type: "code",
         },
       },
+      // Allow http for local development
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
   session: {
