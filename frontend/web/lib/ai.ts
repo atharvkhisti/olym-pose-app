@@ -46,7 +46,7 @@ export class AIServiceError extends Error {
 }
 
 const AI_SERVICE_URL =
-  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "http://localhost:8001";
+  process.env.NEXT_PUBLIC_AI_SERVICE_URL || "/api";
 
 // Session ID for this browser session
 let sessionId: string | null = null;
