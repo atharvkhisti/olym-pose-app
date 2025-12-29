@@ -2,7 +2,7 @@ import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { connectDB } from "./db";
-import User from "@/models/user";
+import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
 /**
