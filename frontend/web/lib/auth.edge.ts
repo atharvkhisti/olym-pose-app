@@ -1,13 +1,10 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
-import { connectDB } from "./db";
-import User from "@/models/User";
-import bcrypt from "bcryptjs";
 
 /**
  * Auth configuration that can run in Edge Runtime.
- * This excludes the MongoDB adapter which requires Node.js runtime.
+ * This excludes the MongoDB adapter and Credentials provider which require Node.js runtime.
+ * Credentials provider is added in auth.config.ts for server-side routes.
  */
 export const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -25,45 +22,6 @@ export const authConfig: NextAuthConfig = {
       },
       // Allow http for local development
       allowDangerousEmailAccountLinking: true,
-    }),
-    Credentials({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        try {
-          await connectDB();
-          const user = await User.findOne({ email: credentials.email });
-
-          if (!user || !user.password) {
-            return null;
-          }
-
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password as string,
-            user.password
-          );
-
-          if (!isPasswordValid) {
-            return null;
-          }
-
-          return {
-            id: user._id.toString(),
-            email: user.email,
-            name: user.name,
-          };
-        } catch (error) {
-          console.error("Auth error:", error);
-          return null;
-        }
-      },
     }),
   ],
   session: {
