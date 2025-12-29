@@ -4,6 +4,8 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 
@@ -11,13 +13,45 @@ export default function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleCredentialsSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password");
+        setIsLoading(false);
+      } else if (result?.ok) {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (err) {
+      console.error("Sign-in error:", err);
+      setError("Failed to sign in. Please try again.");
+      setIsLoading(false);
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
       setError("");
-      
-      console.log("Initiating Google sign-in...");
       
       // For OAuth providers like Google, we need redirect: true
       // This allows the browser to navigate to Google's consent screen
@@ -41,10 +75,66 @@ export default function LoginForm() {
         </Alert>
       )}
 
+      <form onSubmit={handleCredentialsSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+        </div>
+
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full"
+          size="lg"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            "Sign in"
+          )}
+        </Button>
+      </form>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-neutral-700" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-neutral-900 px-2 text-neutral-400">
+            Or continue with
+          </span>
+        </div>
+      </div>
+
       <Button
         type="button"
         onClick={handleGoogleSignIn}
         disabled={isLoading}
+        variant="outline"
         className="w-full"
         size="lg"
       >
