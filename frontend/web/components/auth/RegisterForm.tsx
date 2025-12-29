@@ -50,6 +50,7 @@ export function RegisterForm() {
       const data = await response.json();
 
       if (!response.ok) {
+        console.error("Registration API error:", { status: response.status, data });
         setError(data.error || "Registration failed");
         setIsLoading(false);
         return;
