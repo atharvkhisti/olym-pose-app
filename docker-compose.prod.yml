@@ -27,7 +27,7 @@ services:
     environment:
       - NODE_ENV=production
       # In production, frontend browser calls AI through Caddy reverse proxy
-      - NEXT_PUBLIC_AI_SERVICE_URL=https://olympose.103-110-252-184.sslip.io/api
+      - NEXT_PUBLIC_AI_SERVICE_URL=https://olymplus.duckdns.org/api
       # NextAuth v5 requires this for production
       - AUTH_TRUST_HOST=true
       # These must be set in .env file:
@@ -48,6 +48,28 @@ services:
       start_period: 10s
     networks:
       - olym-pose-network
+
+  # Caddy Reverse Proxy
+  caddy:
+    image: caddy:2
+    container_name: olym-pose-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - olym-pose-network
+    restart: unless-stopped
+    depends_on:
+      - web
+      - ai
+
+volumes:
+  caddy-data:
+  caddy-config:
 
 networks:
   olym-pose-network:
