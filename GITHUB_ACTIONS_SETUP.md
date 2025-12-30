@@ -31,7 +31,7 @@
 
    **Secret 2:**
    - Name: `EC2_HOST`
-   - Value: `65.1.94.87`
+   - Value: `15.207.247.202`
 
 6. Click **"Add secret"** for each
 
@@ -95,7 +95,7 @@ View all deployments at:
 
 ### Deployment fails with SSH error
 - Check `EC2_SSH_KEY` secret is correct (entire key)
-- Check `EC2_HOST` is `65.1.94.87`
+- Check `EC2_HOST` is `15.207.247.202`
 
 ### Build fails
 - Check Docker build logs in Actions tab

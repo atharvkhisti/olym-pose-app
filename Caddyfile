@@ -1,9 +1,9 @@
 {
   # Global options
-  email admin@olympose.65-1-94-87.sslip.io
+  email admin@olymplus.duckdns.org
 }
 
-olympose.65-1-94-87.sslip.io {
+olymplus.duckdns.org {
   # Automatic HTTPS via Let's Encrypt
   
   # Compression

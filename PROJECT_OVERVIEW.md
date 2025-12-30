@@ -23,7 +23,7 @@
                    ▼
 ┌──────────────────────────────────────────────────────────────┐
 │           AWS EC2 Instance (t3.micro)                        │
-│           IP: 65.1.94.87                                   │
+│           IP: 15.207.247.202                                   │
 │                                                              │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │  Caddy Reverse Proxy (Port 443/80)                     │ │
@@ -284,7 +284,7 @@ Required secrets stored in GitHub:
    - Stored securely, never exposed
 
 2. **`EC2_HOST`**
-   - EC2 instance IP: `65.1.94.87`
+   - EC2 instance IP: `15.207.247.202`
    - Target for automated SSH deployment
 
 ### Benefits of GitHub Actions
@@ -307,7 +307,7 @@ Required secrets stored in GitHub:
 - **Problem**: Instance status checks failed after Dec 24 outage
 - **Root Cause**: t3.micro instance froze or crashed
 - **Solution**: Stop/Start instance in AWS Console
-- **Side Effect**: Public IP changed from 43.204.228.125 to 13.233.133.240, then to 65.1.94.87
+- **Side Effect**: Public IP changed from 43.204.228.125 to 13.233.133.240, then to 15.207.247.202
 
 #### Changes Made:
 1. **Caddyfile** - Updated domain and reverse proxy
@@ -430,7 +430,7 @@ Required secrets stored in GitHub:
 - OS: Ubuntu 24.04 LTS
 - Storage: 8GB EBS volume
 - Region: ap-south-1 (Mumbai)
-- IP: 65.1.94.87 (elastic IP recommended)
+- IP: 15.207.247.202 (elastic IP recommended)
 
 **Security Group Rules**:
 - Port 22 (SSH) - for deployments
@@ -569,7 +569,7 @@ GitHub Actions Runner (Cloud Server)
         │           └─ docker push ghcr.io/atharvkhisti/olym-pose-ai:latest
         │
         └─ Step 5: Deploy to EC2 (5 min)
-                    └─ SSH to ubuntu@65.1.94.87
+                    └─ SSH to ubuntu@15.207.247.202
                     └─ cd /home/ubuntu/olym-pose-app
                     └─ docker compose -f docker-compose.prod.yml pull
                     └─ docker compose -f docker-compose.prod.yml up -d
@@ -694,7 +694,7 @@ git push origin main
 
 **SSH to EC2** (if needed):
 ```bash
-ssh -i olym-pose-app.pem ubuntu@65.1.94.87
+ssh -i olym-pose-app.pem ubuntu@15.207.247.202
 ```
 
 **View Logs**:
