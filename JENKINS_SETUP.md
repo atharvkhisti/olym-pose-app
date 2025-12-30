@@ -31,12 +31,12 @@ chmod +x scripts/install-jenkins.sh
 
 ### 1.3 Initial Jenkins Setup
 
-1. Access Jenkins at: `http://13.233.133.240:8080`
+1. Access Jenkins at: `http://65.1.94.87:8080`
 2. Copy the initial admin password shown in terminal
 3. Paste password to unlock Jenkins
 4. Click "Install suggested plugins"
 5. Create admin user (save credentials!)
-6. Set Jenkins URL: `http://13.233.133.240:8080`
+6. Set Jenkins URL: `http://65.1.94.87:8080`
 7. Click "Start using Jenkins"
 
 ## 🔑 Step 2: Configure Credentials
@@ -105,7 +105,7 @@ Click "Save"
 1. Go to GitHub repository: `atharvkhisti/olym-pose-app`
 2. Settings → Webhooks → Add webhook
 3. Fill in:
-   - Payload URL: `http://13.233.133.240:8080/github-webhook/`
+   - Payload URL: `http://65.1.94.87:8080/github-webhook/`
    - Content type: `application/json`
    - Events: Just the push event
    - ✅ Active
@@ -123,7 +123,7 @@ Jenkins needs permission to run Docker commands:
 
 ```bash
 # SSH to EC2
-ssh -i key.pem ubuntu@13.233.133.240
+ssh -i key.pem ubuntu@65.1.94.87
 
 # Add jenkins user to docker group
 sudo usermod -aG docker jenkins
